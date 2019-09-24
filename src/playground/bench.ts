@@ -15,7 +15,7 @@ export function bench(props: { iterations: number }) {
     iterations.push(i);
   }
   return {
-    measure: (name: string, fn: () => any) => {
+    measure: (name: string, fn: (index : number) => any) => {
       arr[name] = fn;
     },
     start: () => {
