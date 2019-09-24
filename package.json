@@ -1,0 +1,31 @@
+{
+  "name": "buntis-compiler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fuse-box/buntis-compiler.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fuse-box/buntis-compiler/issues"
+  },
+  "homepage": "https://github.com/fuse-box/buntis-compiler#readme",
+  "devDependencies": {
+    "@types/estree": "^0.0.39",
+    "@types/jest": "^24.0.18",
+    "@types/node": "^12.7.5",
+    "fuse-box": "^4.0.0-next.137",
+    "fuse-box-typechecker": "^3.0.0-next.13",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.1.0"
+  },
+  "dependencies": {
+    "buntis": "^0.1.9"
+  }
+}
