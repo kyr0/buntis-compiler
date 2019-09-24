@@ -2,7 +2,6 @@ import { ASTNode } from "../../interfaces/AST";
 import { createNodeContext } from "../../program/NodeContext";
 import { IVisit } from "../../program/Visitor";
 
-
 export function NamespaceTransformer(globalContext) {
   return (visit: IVisit) => {
     const node = visit.node;
@@ -20,7 +19,7 @@ export function NamespaceTransformer(globalContext) {
             init: null,
             id: {
               type: "Identifier",
-              name: nodeContext.namespace
+              name: node.id.name
             }
           }
         ]

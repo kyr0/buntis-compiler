@@ -31,59 +31,61 @@ export interface IVisitorMod {
   removeNode: boolean;
 }
 
-class TransformationContext {
-  private _replaces: Array<{ target: IVisit; nodes: Array<ASTNode> }>;
-  private _remove: Array<{ target: IVisit }>;
-  constructor(public root: ASTNode) {}
-
-  replaceLater(target: IVisit, nodes: Array<ASTNode>) {
-    if (!this._replaces) this._replaces = [];
-    this._replaces.push({ target, nodes });
-  }
-
-  removeLater(target: IVisit) {
-    if (!this._remove) this._remove = [];
-
-    this._remove.push({ target });
-  }
-
-  private replaceNodes() {
-    for (const item of this._replaces) {
-      const visitor = item.target;
-      if (visitor.property && visitor.parent) {
-        if (visitor.parent[visitor.property] instanceof Array) {
-          const index = visitor.parent[visitor.property].indexOf(visitor.node);
-          if (index > -1) {
-            visitor.parent[visitor.property].splice(index, 1, ...item.nodes);
-          }
-        } else {
-          visitor.parent[visitor.property] = item.nodes[0];
-        }
-      }
-    }
-  }
-
-  private removeNodes() {
-    for (const item of this._remove) {
-      const visitor = item.target;
-      if (visitor.property && visitor.parent) {
-        if (visitor.parent[visitor.property] instanceof Array) {
-          const index = visitor.parent[visitor.property].indexOf(visitor.node);
-          if (index > -1) {
-            visitor.parent[visitor.property].splice(index, 1);
+function astTransformer() {
+  let replaces: Array<{ target: IVisit; nodes: Array<ASTNode> }>;
+  let removes: Array<{ target: IVisit }>;
+  return {
+    replaceLater: (target: IVisit, nodes: Array<ASTNode>) => {
+      if (!replaces) replaces = [];
+      replaces.push({ target, nodes });
+    },
+    removeLater: (target: IVisit) => {
+      if (!removes) removes = [];
+      removes.push({ target });
+    },
+    finalise: () => {
+      if (replaces) {
+        for (const item of replaces) {
+          const visitor = item.target;
+          if (visitor.property && visitor.parent) {
+            if (visitor.parent[visitor.property] instanceof Array) {
+              const index = visitor.parent[visitor.property].indexOf(
+                visitor.node
+              );
+              if (index > -1) {
+                visitor.parent[visitor.property].splice(
+                  index,
+                  1,
+                  ...item.nodes
+                );
+              }
+            } else {
+              visitor.parent[visitor.property] = item.nodes[0];
+            }
           }
         }
       }
+      if (removes) {
+        for (const item of removes) {
+          const visitor = item.target;
+          if (visitor.property && visitor.parent) {
+            if (visitor.parent[visitor.property] instanceof Array) {
+              const index = visitor.parent[visitor.property].indexOf(
+                visitor.node
+              );
+              if (index > -1) {
+                visitor.parent[visitor.property].splice(index, 1);
+              }
+            }
+          }
+        }
+      }
     }
-  }
-
-  finalise() {
-    if (this._remove) this.removeNodes();
-    if (this._replaces) this.replaceNodes();
-  }
+  };
 }
+
 function _visit(
-  t: TransformationContext,
+  t,
   fn: (visit: IVisit) => IVisitorMod | void,
   node: ASTNode,
   props: { parent?; property?; id?: number },
@@ -139,8 +141,8 @@ export function FastVisit(
   ast: ASTNode,
   fn: (visit: IVisit) => IVisitorMod | any
 ): ASTNode {
-  const t = new TransformationContext(ast);
-  _visit(t, fn, ast, {}, undefined);
-  t.finalise();
+  const transformer = astTransformer();
+  _visit(transformer, fn, ast, {}, undefined);
+  transformer.finalise();
   return ast;
 }
