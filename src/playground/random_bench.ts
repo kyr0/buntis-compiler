@@ -30,28 +30,7 @@ const benchArrayCheck = () => {
 };
 
 const benchIndexOf = () => {
-  function customIndexOf(arr, searchElement) {
-    var minIndex = 0;
-    var maxIndex = arr.length - 1;
-    var currentIndex;
-    var currentElement;
-
-    while (minIndex <= maxIndex) {
-      currentIndex = ((minIndex + maxIndex) / 2) | 0;
-      currentElement = arr[currentIndex];
-
-      if (currentElement < searchElement) {
-        minIndex = currentIndex + 1;
-      } else if (currentElement > searchElement) {
-        maxIndex = currentIndex - 1;
-      } else {
-        return currentIndex;
-      }
-    }
-    return -1;
-  }
-
-  const data : any = [];
+  const data = [];
   for (let i = 0; i < 10000; i++) {
     data.push(i);
   }
@@ -60,9 +39,9 @@ const benchIndexOf = () => {
     data.indexOf(getRandomInt(1, 10000));
   });
 
-  b.measure("customIndexOf", () => {
-    customIndexOf(data, getRandomInt(1, 10000));
-  });
+  // b.measure("findIndex", () => {
+  //   data.findIndex(i => i === getRandomInt(1, 10000));
+  // });
 
   b.measure("includes", () => {
     data.includes(getRandomInt(1, 10000));
@@ -70,4 +49,55 @@ const benchIndexOf = () => {
   b.start();
 };
 
-benchIndexOf();
+//benchIndexOf();
+
+function benchArrVersusObj() {
+  const arr = [];
+  const obj = {};
+  for (let i = 0; i < 10000; i++) {
+    arr.push(i);
+    obj[i] = 1;
+  }
+
+  b.measure("Array.indexOf", () => {
+    arr.indexOf(getRandomInt(1, 10000));
+  });
+  b.measure("Array.includes", () => {
+    arr.includes(getRandomInt(1, 10000));
+  });
+
+  b.measure("in object", () => {
+    if (obj[getRandomInt(1, 10000)]) {
+    }
+  });
+
+  b.start();
+}
+
+function benchObjCopy() {
+  const b = bench({ iterations: 100 });
+  const arr = [];
+  const obj = {};
+  for (let i = 0; i < 10000; i++) {
+    obj[i] = 1;
+  }
+
+  b.measure("for const key in obj", () => {
+    const newArray: any = {};
+    for (const key in obj) {
+      newArray[key] = 1;
+    }
+  });
+
+  b.measure("spread operator", () => {
+    const newArray = { ...obj };
+  });
+
+  b.measure("Object.assign", () => {
+    Object.assign({}, obj);
+  });
+
+  b.start();
+}
+benchObjCopy();
+//benchArrVersusObj();

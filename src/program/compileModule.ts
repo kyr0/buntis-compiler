@@ -1,11 +1,16 @@
-import { transpileModule } from "./transpileModule";
-import { IVisit, IVisitorMod } from "./Visitor";
-import { ICompilerOptions } from "../interfaces/ICompilerOptions";
 import * as buntis from "buntis";
-import { ASTNode } from "../interfaces/AST";
-import { NamespaceTransformer } from "../transformers/namespaces/NameSpaceTransformer";
-import { ExportTransformer } from "../transformers/ExportTransformer";
 import { generate } from "../generator/generator";
+import { ASTNode } from "../interfaces/AST";
+import { ICompilerOptions } from "../interfaces/ICompilerOptions";
+import { ExportTransformer } from "../transformers/ExportTransformer";
+import { GlobalContextTransformer } from "../transformers/GlobalContextTransformer";
+import { ImportTransformer } from "../transformers/ImportTransformer";
+import { InterfaceRemoverTransformer } from "../transformers/InterfaceRemoverTransformer";
+import { NamespaceTransformer } from "../transformers/NameSpaceTransformer";
+import { IVisit, IVisitorMod } from "../Visitor/Visitor";
+import { createGlobalContext } from "./GlobalContext";
+import { ITransformerList, transpileModule } from "./transpileModule";
+
 
 export interface ICompileModuleProps {
   code: string;
@@ -23,15 +28,21 @@ export function compileModule(props: ICompileModuleProps) {
     ts: true
   });
 
-  const defaultTransformers = [NamespaceTransformer, ExportTransformer];
+  const defaultTransformers: ITransformerList = [
+    GlobalContextTransformer(),
+    NamespaceTransformer(),
+    InterfaceRemoverTransformer(),
+    ImportTransformer(),
+    ExportTransformer()
+  ];
 
   transpileModule({
     ast: ast as ASTNode,
     compilerOptions: props.compilerOptions,
-    globalContext: props.globalContext,
+    globalContext: createGlobalContext(props.globalContext),
     transformers: defaultTransformers
   });
-
+  //console.log(JSON.stringify(ast, null, 2));
   const res = generate(ast, {});
 
   return { code: res };

@@ -3,8 +3,8 @@ import { FastVisit } from "../Visitor";
 describe("Visitor", () => {
   describe("removal", () => {
     it("should ", () => {
-      const result = FastVisit(
-        {
+      const result = FastVisit({
+        ast: {
           type: "Program",
           body: {
             type: "Property",
@@ -16,12 +16,12 @@ describe("Visitor", () => {
             ]
           }
         },
-        visit => {
+        fn: visit => {
           if (visit.node.type === "PublicKeyword") {
             return { removeNode: true };
           }
         }
-      );
+      });
       expect(result).toEqual({
         type: "Program",
         body: {
@@ -44,8 +44,8 @@ describe("Visitor", () => {
 
   describe("replacer", () => {
     it("should replace arrays of 2 correctly IN Array", () => {
-      const result = FastVisit(
-        {
+      const result = FastVisit({
+        ast: {
           type: "Program",
           body: {
             type: "Property",
@@ -57,7 +57,7 @@ describe("Visitor", () => {
             ]
           }
         },
-        visit => {
+        fn: visit => {
           if (visit.node.type === "PublicKeyword") {
             return {
               replaceWith: [
@@ -67,7 +67,7 @@ describe("Visitor", () => {
             };
           }
         }
-      );
+      });
       expect(result).toEqual({
         type: "Program",
         body: {
@@ -84,8 +84,8 @@ describe("Visitor", () => {
     });
 
     it("should replace item correctly in one array", () => {
-      const result = FastVisit(
-        {
+      const result = FastVisit({
+        ast: {
           type: "Program",
           body: {
             type: "Property",
@@ -97,14 +97,14 @@ describe("Visitor", () => {
             ]
           }
         },
-        visit => {
+        fn: visit => {
           if (visit.node.type === "PublicKeyword") {
             return {
               replaceWith: { type: "ReturnStatement" }
             };
           }
         }
-      );
+      });
 
       expect(result).toEqual({
         type: "Program",
@@ -121,8 +121,8 @@ describe("Visitor", () => {
     });
 
     it("should replace item correctly in an object", () => {
-      const result = FastVisit(
-        {
+      const result = FastVisit({
+        ast: {
           type: "Program",
           body: {
             type: "Property",
@@ -131,14 +131,14 @@ describe("Visitor", () => {
             ]
           }
         },
-        visit => {
+        fn: visit => {
           if (visit.node.type === "ThisType") {
             return {
               replaceWith: { type: "TypeAliasDeclaration", value: 100 }
             };
           }
         }
-      );
+      });
       //console.log(JSON.stringify(result, null, 2));
       expect(result).toEqual({
         type: "Program",
@@ -158,8 +158,8 @@ describe("Visitor", () => {
     });
 
     it("should replace 2 times item correctly in an object", () => {
-      const result = FastVisit(
-        {
+      const result = FastVisit({
+        ast: {
           type: "Program",
           body: {
             type: "Property",
@@ -168,7 +168,7 @@ describe("Visitor", () => {
             ]
           }
         },
-        visit => {
+        fn: visit => {
           if (visit.node.type === "UndefinedKeyword") {
             return { replaceWith: { type: "UpdateExpression", value: 500 } };
           }
@@ -184,7 +184,7 @@ describe("Visitor", () => {
             };
           }
         }
-      );
+      });
 
       expect(result).toEqual({
         type: "Program",

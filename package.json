@@ -23,9 +23,10 @@
     "fuse-box": "^4.0.0-next.137",
     "fuse-box-typechecker": "^3.0.0-next.13",
     "jest": "^24.9.0",
+    "prettier": "^1.18.2",
     "ts-jest": "^24.1.0"
   },
   "dependencies": {
-    "buntis": "^0.1.9"
+    "buntis": "^0.1.24"
   }
 }

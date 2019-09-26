@@ -1,12 +1,9 @@
-console.log(1);
-namespace Validation {
-  export interface StringValidator {
-    isAcceptable(s: string): boolean;
+import foo from "./bar";
+namespace Foo {
+  export const a = 1;
+  export function hello() {
+    console.log(a);
   }
-
-  export class SomeThing {
-    private foo() {}
-  }
+  console.log(foo);
 }
-
-new Validation.SomeThing();
+console.log(a);

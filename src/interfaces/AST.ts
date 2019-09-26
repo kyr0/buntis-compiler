@@ -1,8 +1,14 @@
-import { IASTContext } from "../program/Visitor";
+import { IASTScope } from "../Visitor/Visitor";
 
 export interface ASTNode {
-  context?: IASTContext;
+  scope?: IASTScope;
   type: ASTNodeType;
+  specifiers?: Array<ASTNode>;
+  imported?: ASTNode;
+  source?: ASTNode;
+
+  local?: ASTNode;
+  exported?: ASTNode;
   name?: string;
   kind?: string;
   init?: null | ASTNode;
