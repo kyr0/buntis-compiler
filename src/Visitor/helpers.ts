@@ -87,6 +87,7 @@ export function defineVariable(left: string, right: string | ASTNode): ASTNode {
 }
 
 export function createExports(
+  exportsKey: string,
   exportsVariableName: string,
   property: ASTNode
 ): ASTNode {
@@ -99,7 +100,7 @@ export function createExports(
         type: "MemberExpression",
         object: {
           type: "Identifier",
-          name: "exports"
+          name: exportsKey
         },
         computed: false,
         property: {

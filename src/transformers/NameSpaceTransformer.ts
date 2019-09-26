@@ -16,13 +16,16 @@ export function NamespaceTransformer(): ITransformer {
 
       if (node.type === "ModuleDeclaration") {
         const nm = node.body as ASTNode;
+        const mameSpaceName = node.id.name;
         // launch custom transpilation for that namespace
         // we skip children in onEachNode
         transpileModule({
           ...globalContext.programProps,
           ast: nm,
-          namespace: node.id.name,
-          globalContext: createGlobalContext({})
+          namespace: mameSpaceName,
+          globalContext: createGlobalContext({
+            namespace: mameSpaceName
+          })
         });
 
         //node.body.context =
@@ -50,7 +53,7 @@ export function NamespaceTransformer(): ITransformer {
               params: [
                 {
                   type: "Identifier",
-                  name: "Validation"
+                  name: mameSpaceName
                 }
               ],
               body: {
@@ -66,13 +69,13 @@ export function NamespaceTransformer(): ITransformer {
                 type: "LogicalExpression",
                 left: {
                   type: "Identifier",
-                  name: "Validation"
+                  name: mameSpaceName
                 },
                 right: {
                   type: "AssignmentExpression",
                   left: {
                     type: "Identifier",
-                    name: "Validation"
+                    name: mameSpaceName
                   },
                   operator: "=",
                   right: {

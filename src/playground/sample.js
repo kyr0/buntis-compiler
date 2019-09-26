@@ -1,13 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const bar_1 = require("./bar");
-var Foo;
-(function (Foo) {
-    Foo.a = 1;
-    function hello() {
-        console.log(Foo.a);
-    }
-    Foo.hello = hello;
-    console.log(bar_1.default);
-})(Foo || (Foo = {}));
-console.log(a);
+const React = require("react");
+function hello() {
+    const obj = [{ name: "1" }];
+    const name = "hello";
+    return (React.createElement("div", null,
+        hello,
+        React.createElement("span", { className: name === "hello" ? "1" : 2 }, obj.map(item => (React.createElement("i", null, item.name))))));
+}
+exports.hello = hello;

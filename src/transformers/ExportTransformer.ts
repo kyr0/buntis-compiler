@@ -6,7 +6,7 @@ import { IVisit } from "../Visitor/Visitor";
 export function ExportTransformer(): ITransformer {
   return {
     onEachNode: (visit: IVisit) => {
-      const global = visit.globalContext;
+      const global = visit.globalContext as GlobalContext;
 
       if (global.exportAfterDeclaration) {
         const node = visit.node;
@@ -16,10 +16,14 @@ export function ExportTransformer(): ITransformer {
           for (const localVar of definedLocally) {
             if (global.exportAfterDeclaration[localVar]) {
               newNodes.push(
-                createExports(global.exportAfterDeclaration[localVar].target, {
-                  type: "Identifier",
-                  name: localVar
-                })
+                createExports(
+                  global.namespace,
+                  global.exportAfterDeclaration[localVar].target,
+                  {
+                    type: "Identifier",
+                    name: localVar
+                  }
+                )
               );
             }
           }
@@ -62,7 +66,7 @@ export function ExportTransformer(): ITransformer {
             return {
               replaceWith: [
                 node.declaration,
-                createExports("default", {
+                createExports(global.namespace, "default", {
                   type: "Identifier",
                   name: node.declaration.id.name
                 })
@@ -70,7 +74,11 @@ export function ExportTransformer(): ITransformer {
             };
           }
           return {
-            replaceWith: createExports("default", node.declaration)
+            replaceWith: createExports(
+              global.namespace,
+              "default",
+              node.declaration
+            )
           };
         }
       }
@@ -97,7 +105,7 @@ export function ExportTransformer(): ITransformer {
               global.identifierReplacement[specifier.local.name]
             ) {
               newNodes.push(
-                createExports(specifier.exported.name, {
+                createExports(global.namespace, specifier.exported.name, {
                   type: "Identifier",
                   name: specifier.local.name
                 })
@@ -126,7 +134,7 @@ export function ExportTransformer(): ITransformer {
             return {
               replaceWith: [
                 node.declaration,
-                createExports(node.declaration.id.name, {
+                createExports(global.namespace, node.declaration.id.name, {
                   type: "Identifier",
                   name: node.declaration.id.name
                 })
@@ -144,7 +152,7 @@ export function ExportTransformer(): ITransformer {
               let newNodes = [];
               for (const declaration of node.declaration.declarations) {
                 global.identifierReplacement[declaration.id.name] = {
-                  first: "exports",
+                  first: global.namespace,
                   second: declaration.id.name
                 };
 
@@ -153,7 +161,11 @@ export function ExportTransformer(): ITransformer {
                   // we night have something like this:
                   //    export var FooBar;
                   newNodes.push(
-                    createExports(declaration.id.name, declaration.init)
+                    createExports(
+                      global.namespace,
+                      declaration.id.name,
+                      declaration.init
+                    )
                   );
                 }
               }

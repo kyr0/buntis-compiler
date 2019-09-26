@@ -16,12 +16,23 @@ export interface GlobalContext {
       insertAfter?: ASTNode;
     };
   };
+  namespace?: string;
 }
 
-export function createGlobalContext(userContext): GlobalContext {
+export function createGlobalContext(userContext?: {
+  [key: string]: any;
+}): GlobalContext {
   let index = 1;
-  return {
+  let essentialContext = {
     getNextIndex: () => index++,
-    identifierReplacement: {}
+    identifierReplacement: {},
+    namespace: "exports"
   };
+  if (userContext) {
+    for (const key in userContext) {
+      essentialContext[key] = userContext[key];
+    }
+  }
+
+  return essentialContext;
 }
