@@ -11,6 +11,7 @@ import { IVisit, IVisitorMod } from "../Visitor/Visitor";
 import { createGlobalContext } from "./GlobalContext";
 import { ITransformerList, transpileModule } from "./transpileModule";
 import { JSXTransformer } from "../transformers/JSXTransformer";
+import { ConstructorTransformer } from "../transformers/ConstructorTransformer";
 
 export interface ICompileModuleProps {
   code: string;
@@ -30,13 +31,13 @@ export function compileModule(props: ICompileModuleProps) {
 
   const defaultTransformers: ITransformerList = [
     GlobalContextTransformer(),
+    ConstructorTransformer(),
     JSXTransformer(),
     NamespaceTransformer(),
     InterfaceRemoverTransformer(),
     ImportTransformer(),
     ExportTransformer()
   ];
-
   transpileModule({
     ast: ast as ASTNode,
     compilerOptions: props.compilerOptions,
