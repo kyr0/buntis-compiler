@@ -3,13 +3,21 @@ import { IASTScope } from "../Visitor/Visitor";
 export interface ASTNode {
   scope?: IASTScope;
   type: ASTNodeType;
+  shorthand?: boolean;
   specifiers?: Array<ASTNode>;
   imported?: ASTNode;
   source?: ASTNode;
+  method?: boolean;
+  JSXElement?: ASTNode;
+  children?: Array<ASTNode>;
+  attributes?: Array<ASTNode>;
+  openingElement?: ASTNode;
+  closingElement?: ASTNode;
+  argument?: ASTNode;
 
   local?: ASTNode;
   exported?: ASTNode;
-  name?: string;
+  name?: any;
   kind?: string;
   init?: null | ASTNode;
   declarations?: Array<ASTNode>;

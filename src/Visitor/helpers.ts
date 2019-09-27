@@ -86,6 +86,9 @@ export function defineVariable(left: string, right: string | ASTNode): ASTNode {
   };
 }
 
+export function createLiteral(value): ASTNode {
+  return { type: "Literal", value };
+}
 export function createExports(
   exportsKey: string,
   exportsVariableName: string,

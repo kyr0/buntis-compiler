@@ -160,7 +160,8 @@ export function TopLevelVisit(props: IFastVisit) {
 
 export function FastVisit(props: IFastVisit): ASTNode {
   const transformer = astTransformer();
-
+  
+  console.log(JSON.stringify(props.ast, null, 2));
   _visit(transformer, props.globalContext, props.fn, props.ast, {}, undefined);
   transformer.finalise(props);
 

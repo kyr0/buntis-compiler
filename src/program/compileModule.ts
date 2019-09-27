@@ -10,7 +10,7 @@ import { NamespaceTransformer } from "../transformers/NameSpaceTransformer";
 import { IVisit, IVisitorMod } from "../Visitor/Visitor";
 import { createGlobalContext } from "./GlobalContext";
 import { ITransformerList, transpileModule } from "./transpileModule";
-
+import { JSXTransformer } from "../transformers/JSXTransformer";
 
 export interface ICompileModuleProps {
   code: string;
@@ -30,6 +30,7 @@ export function compileModule(props: ICompileModuleProps) {
 
   const defaultTransformers: ITransformerList = [
     GlobalContextTransformer(),
+    JSXTransformer(),
     NamespaceTransformer(),
     InterfaceRemoverTransformer(),
     ImportTransformer(),

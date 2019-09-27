@@ -75,7 +75,7 @@ function benchArrVersusObj() {
 }
 
 function benchObjCopy() {
-  const b = bench({ iterations: 100 });
+  const b = bench({ iterations: 1000 });
   const arr = [];
   const obj = {};
   for (let i = 0; i < 10000; i++) {
@@ -99,5 +99,28 @@ function benchObjCopy() {
 
   b.start();
 }
-benchObjCopy();
+//benchObjCopy();
 //benchArrVersusObj();
+
+function benchIterators() {
+  const b = bench({ iterations: 1000 });
+  const arr = [];
+
+  for (let i = 0; i < 10000; i++) {
+    arr.push(i);
+  }
+
+  b.measure("for (const i of arr) {}", () => {
+    for (const i of arr) {
+    }
+  });
+
+  b.measure("while(i < arr.length){ i++ }", () => {
+    let i = 0;
+    while(i < arr.length){ i++ }
+  });
+
+  b.start();
+}
+
+benchIterators();

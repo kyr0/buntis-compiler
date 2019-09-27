@@ -1,0 +1,146 @@
+import { ASTNode } from "../interfaces/AST";
+import { ITransformer } from "../program/transpileModule";
+import { createLiteral } from "../Visitor/helpers";
+import { IVisit } from "../Visitor/Visitor";
+
+const Factories: { [key: string]: () => ASTNode } = {};
+
+function createJSXFactory(
+  jsxFactory: string,
+
+  args: Array<ASTNode>
+): ASTNode {
+  return {
+    type: "CallExpression",
+    callee: {
+      type: "MemberExpression",
+      object: {
+        type: "Identifier",
+        name: "React"
+      },
+      computed: false,
+      property: {
+        type: "Identifier",
+        name: "createElement"
+      }
+    },
+    arguments: args
+  };
+}
+
+// {
+//     "type": "ObjectExpression",
+//     "properties": [
+//       {
+//         "type": "Property",
+//         "key": {
+//           "type": "Identifier",
+//           "name": "className"
+//         },
+//         "value": {
+//           "type": "Literal",
+//           "value": "1"
+//         },
+//         "kind": "init",
+//         "computed": false,
+//         "method": false,
+//         "shorthand": false
+//       }
+//     ]
+//   }
+
+function createJSXProperties(node: ASTNode) {
+  node.attributes.map(item => {
+    item.name.name;
+  });
+}
+
+function createObjectAssignExpression(): ASTNode {
+  return {
+    type: "CallExpression",
+    callee: {
+      type: "MemberExpression",
+      object: {
+        type: "Identifier",
+        name: "Object"
+      },
+      computed: false,
+      property: {
+        type: "Identifier",
+        name: "assign"
+      }
+    },
+    arguments: []
+  };
+}
+
+function createProperty(key: string, value: ASTNode): ASTNode {
+  return {
+    type: "Property",
+    key: {
+      type: "Identifier",
+      name: key
+    },
+    value: value,
+    kind: "init",
+    computed: false,
+    method: false,
+    shorthand: false
+  };
+}
+
+export interface IJSXTranformerOptions {
+  use;
+}
+export function JSXTransformer(opts?: IJSXTranformerOptions): ITransformer {
+  return (visit: IVisit) => {
+    const node = visit.node;
+
+    switch (node.type) {
+      case "JSXElement":
+        let props: ASTNode;
+        let propObjects: Array<ASTNode> = [];
+        let propObject: ASTNode;
+        let spreaded = false;
+        for (const attr of node.openingElement.attributes) {
+          if (attr.type === "JSXAttribute") {
+            if (!propObject)
+              propObject = {
+                type: "ObjectExpression",
+                properties: []
+              };
+            propObject.properties.push(
+              createProperty(attr.name.name, attr.value)
+            );
+          } else if (attr.type === "JSXSpreadAttribute") {
+            spreaded = true;
+            propObjects.push(propObject);
+            propObject = undefined;
+            propObjects.push(attr.argument);
+          }
+        }
+
+        if (spreaded) {
+          props = createObjectAssignExpression();
+          props.arguments = propObjects;
+        } else if (propObject) {
+          props = propObject;
+        } else props = createLiteral(null);
+
+        return {
+          replaceWith: createJSXFactory(
+            "React.createElement",
+            [createLiteral(node.openingElement.name.name), props].concat(
+              node.children
+            )
+          )
+        };
+      case "JSXExpressionContainer":
+        return { replaceWith: node.expression };
+      case "JSXText":
+        return {
+          replaceWith: createLiteral(node.value)
+        };
+    }
+  };
+}
