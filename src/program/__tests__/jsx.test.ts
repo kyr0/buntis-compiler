@@ -33,7 +33,7 @@ describe("JSX", () => {
     `);
   });
 
-  it.only("should add just attributes", () => {
+  it("should add just attributes", () => {
     const result = compileModule({
       code: `
         import oi from "./oi";
@@ -42,12 +42,34 @@ describe("JSX", () => {
         }
           `
     });
-    console.log(result.code);
-    // expect(result.code).toMatchInlineSnapshot(`
-    //   "function test() {
-    //     return React.createElement(\\"div\\", null, \\"1\\");
-    //   }
-    //   "
-    // `);
+    expect(result.code).toMatchInlineSnapshot(`
+      "var oi_1 = require(\\"./oi\\");
+      function test() {
+        return React.createElement(\\"i\\", {
+          f: oi_1.default
+        });
+      }
+      "
+    `);
+  });
+
+  it("should add just attributes and spread", () => {
+    const result = compileModule({
+      code: `
+        import oi from "./oi";
+        function test(){
+          return (<i id="1" f={oi} {...props} ></i>)
+        }
+          `
+    });
+    expect(result.code).toMatchInlineSnapshot(`
+      "var oi_1 = require(\\"./oi\\");
+      function test() {
+        return React.createElement(\\"i\\", Object.assign({
+          f: oi_1.default
+        }, props));
+      }
+      "
+    `);
   });
 });
