@@ -8,7 +8,9 @@ export interface ASTNode {
   imported?: ASTNode;
   source?: ASTNode;
   method?: boolean;
+  parameter?:ASTNode;
   JSXElement?: ASTNode;
+
   children?: Array<ASTNode>;
   attributes?: Array<ASTNode>;
   openingElement?: ASTNode;

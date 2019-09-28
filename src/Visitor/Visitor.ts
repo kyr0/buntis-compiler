@@ -1,6 +1,7 @@
 import { ASTNode } from "../interfaces/AST";
 import { astTransformer } from "./astTransformer";
 import { scopeTracker } from "./scopeTracker";
+import { nodeInternals } from "stack-utils";
 
 export interface IVisitProps {
   parent?: any;
@@ -11,6 +12,7 @@ export interface IVisitProps {
 export interface IASTScope {
   context?: any;
   locals?: { [key: string]: any };
+  meta?: { [key: string]: any };
   namespace?: string;
 }
 
@@ -26,6 +28,7 @@ export interface IVisit {
 export interface IVisitorMod {
   context?: any;
   replaceWith?: ASTNode | Array<ASTNode>;
+  scopeMeta?: { [key: string]: any };
   insertAfterThisNode?: ASTNode | Array<ASTNode>;
   ignoreChildren?: boolean;
   whenFinished?: (ast: ASTNode) => void;
@@ -61,6 +64,19 @@ function _visit(
 
   const response = fn(visit);
   if (response) {
+    if (response.scopeMeta) {
+      if (!visit.scope) {
+        visit.scope = { meta: {} };
+        visit.node.scope = visit.scope;
+      } else {
+        if (!visit.scope.meta) visit.scope.meta = {};
+        visit.node.scope = visit.scope;
+      }
+
+      for (const key in response.scopeMeta) {
+        visit.node.scope.meta[key] = response.scopeMeta[key];
+      }
+    }
     if (response.removeNode) {
       t.removeLater(visit);
       return;
@@ -160,7 +176,7 @@ export function TopLevelVisit(props: IFastVisit) {
 
 export function FastVisit(props: IFastVisit): ASTNode {
   const transformer = astTransformer();
-  
+
   console.log(JSON.stringify(props.ast, null, 2));
   _visit(transformer, props.globalContext, props.fn, props.ast, {}, undefined);
   transformer.finalise(props);

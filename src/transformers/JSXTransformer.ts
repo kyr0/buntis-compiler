@@ -101,21 +101,31 @@ export function JSXTransformer(opts?: IJSXTranformerOptions): ITransformer {
         let props: ASTNode;
         let propObjects: Array<ASTNode> = [];
         let propObject: ASTNode;
+        let newObj = true;
+
         let spreaded = false;
-        for (const attr of node.openingElement.attributes) {
-          if (attr.type === "JSXAttribute") {
-            if (!propObject)
+        const { openingElement } = node;
+
+        for (const attr of openingElement.attributes) {
+          // less member access
+          const { type, name, value } = attr; // call 'attr' once
+          if (type === "JSXAttribute") {
+            const createdProp = createProperty(name.name, value);
+            if (newObj) {
               propObject = {
                 type: "ObjectExpression",
-                properties: []
+                properties: [createdProp]
               };
-            propObject.properties.push(
-              createProperty(attr.name.name, attr.value)
-            );
-          } else if (attr.type === "JSXSpreadAttribute") {
+            } else {
+              newObj = false;
+              propObject.properties.push(createdProp);
+            }
+          }
+
+          if (type === "JSXSpreadAttribute") {
             spreaded = true;
             propObjects.push(propObject);
-            propObject = undefined;
+            newObj = true;
             propObjects.push(attr.argument);
           }
         }
