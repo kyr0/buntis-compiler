@@ -3,7 +3,6 @@ import { generate } from "../generator/generator";
 import { ASTNode } from "../interfaces/AST";
 import { ICompilerOptions } from "../interfaces/ICompilerOptions";
 import { ClassConstructorPropertyTransformer } from "../transformers/ClassConstructorPropertyTransformer";
-import { ConstructorTransformer } from "../transformers/ConstructorTransformer";
 import { ExportTransformer } from "../transformers/ExportTransformer";
 import { GlobalContextTransformer } from "../transformers/GlobalContextTransformer";
 import { ImportTransformer } from "../transformers/ImportTransformer";
@@ -33,7 +32,6 @@ export function compileModule(props: ICompileModuleProps) {
   const defaultTransformers: ITransformerList = [
     GlobalContextTransformer(),
     ClassConstructorPropertyTransformer(),
-    ConstructorTransformer(),
     JSXTransformer(),
     NamespaceTransformer(),
     InterfaceRemoverTransformer(),
