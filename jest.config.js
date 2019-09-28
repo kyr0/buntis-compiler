@@ -13,10 +13,8 @@ module.exports = {
   testRegex: "(/(__tests__|tests)/.*|(\\.|/))\\.test\\.tsx?$",
   testPathIgnorePatterns: [
     ".fusebox/",
-    "/lib/",
     "node_modules/",
     "modules",
-    "_playground/",
     "dist/",
     ".dev/"
   ],

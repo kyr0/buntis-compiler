@@ -45,6 +45,7 @@ export interface ASTNode {
   static?: boolean;
   computed?: boolean;
   accessibility?: string;
+  parameter?: ASTNode;
 }
 export type ASTNodeType =
   | "Line"
